@@ -48,7 +48,36 @@ main{
     align-items: center;
     justify-content: space-around;
 }
-
+h2{
+    text-transform: uppercase;
+    font-family: 'Imprima', sans-serif;
+    color: #585858;
+    font-size: 300%;
+    font-weight: lighter;
+    margin: 3%;
+}
+.container{
+    background-color: #D9D9D9;
+    border-radius: 32px;
+    height: 70%;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.topContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.topContainer img{
+    height: 70px;
+    margin: 2% 5% 0% 0%;
+}
+#filtroButton{
+    cursor: pointer;
+}
 .adicionarTarefaPage,.editarTarefaPage{
     width: 100vw;
     height: 100vh;
@@ -97,7 +126,6 @@ fieldset>p{
 fieldset>div>div{
     font-size: 150%;
 }
-
 .descricaoTarefa{
     font-size: 100%;
     padding: 1%;
@@ -106,50 +134,7 @@ fieldset>div>div{
     resize: none;
     width: 40%;
 }
-.container{
-    background-color: #D9D9D9;
-    border-radius: 32px;
-    height: 70%;
-    width: 40%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.topContainer{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
-h2{
-    text-transform: uppercase;
-    font-family: 'Imprima', sans-serif;
-    color: #585858;
-    font-size: 300%;
-    font-weight: lighter;
-    margin: 3%;
-}
-.topContainer img{
-    height: 70px;
-    margin: 2% 5% 0% 0%;
-}
-#filtroButton{
-    cursor: pointer;
-}
-.painelFiltro{
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(320px, -300px);
-    width: 150px;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-}
+
 .holder{
     height: 90%;
     width: 97%;
@@ -239,7 +224,6 @@ h2{
     font-weight: bold;
     width: 100%;
     text-wrap: wrap;
-
 }
 .tarefaCategoria{
     background-color: rgba(255, 255, 255, 0.56);

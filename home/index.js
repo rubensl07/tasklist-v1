@@ -10,34 +10,23 @@ const tarefaPage = document.getElementById('adicionarTarefaPage')
 const tarefaEditPage = document.getElementById('editarTarefaPage')
 const botaoLogout = document.getElementById('logout')
 const filtroButton = document.getElementById('filtroButton')
-const painelFiltro = document.getElementById('painelFiltro')
 const closePanelNovaTarefa = document.getElementById('botaoFecharPainelNovaTarefa')
 const closePanelEditarTarefa = document.getElementById('botaoFecharPainelEditarTarefa')
 const mensagemWarning = document.getElementById('mensagemInfoWarning');
 const listaTarefas = document.getElementById('tarefas')
-
-
-
-filtroButton.addEventListener('click',filtrar) 
-function filtrar(){
+botaoLogout.addEventListener('click', ()=>{
+    localStorage.removeItem('idusuario')
+    window.location.reload()
+})
+filtroButton.addEventListener('click', ()=>{
     filtro++
     if(filtro==5){
         filtro=0
     }
     atualizarPagina()
-    console.log(filtro)
-}
-
-function excluirListaTarefas(){
-    while (listaTarefas.firstChild) {
-        listaTarefas.removeChild(listaTarefas.firstChild);
-    }
-}
+})
 atualizarPagina()
-function atualizarPagina(){
-    excluirListaTarefas()
-    criarTarefas(filtro)
-}
+
 async function validarTarefas() {
     const responseApi = await fetch('http://localhost:5081/tarefas')
     const listTasks = await responseApi.json()
@@ -51,162 +40,12 @@ async function validarTarefas() {
     return (listaDeTarefasUsuario)
 
 }
-async function cadastroTarefa() {
-
-    const titulo = document.getElementById('tituloTarefaNova').value
-    const descricao = document.getElementById('descricaoTarefaNova').value
-    const data = document.querySelector("#dataTarefaNova").value
-    const inputs = document.querySelectorAll('#categoriaTarefaNova input[type="radio"]');
-
-    let categoria = '';
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked) {
-            categoria = inputs[i].value;
-            break; // Interrompe o loop quando encontrar o selecionado
-        }
-    }
-
-    let [ano] = data.split("-");
-
-
-    if (titulo == "" || ano > 9999) {
-        //
-    } else {
-        try {
-            const novaTarefa = {
-                titulo: titulo,
-                descricao: descricao,
-                data: data,
-                categoria: categoria,
-                idUsuario: idPerfil
-            }
-
-
-            await fetch('http://localhost:5081/tarefas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(novaTarefa)
-            })
-            fecharPainel()
-        } catch (error) {
-            console.log(error)
-        }
-    }
-}
-async function abrirPainelEdicao(idTarefa){
-    const titulo = document.getElementById('tituloTarefaEditada')
-    const descricao = document.getElementById('descricaoTarefaEditada')
-    const data = document.querySelector("#dataTarefaEditada")
-    const inputs = document.querySelectorAll('#categoriaTarefaEditada input[type="radio"]');
-
-    const tarefas = await validarTarefas()
-    for(let cont = 0;cont<tarefas.length;cont++){
-        if(idTarefa===tarefas[cont].id){
-            titulo.value = tarefas[cont].titulo
-            descricao.value = tarefas[cont].descricao
-            let dataAtual = tarefas[cont].data
-            data.value = dataAtual
-            console.log(dataAtual)
-            if(inputs[(tarefas[cont].categoria)-1])
-            inputs[(tarefas[cont].categoria)-1].checked = true
-        }
-    }
-    tarefaEditPage.style.visibility = 'visible'
-
-    const botaoEditar = document.getElementById('finalizarEdicao')
-    botaoEditar.addEventListener('click', () => editarTarefa(idTarefa));
-}
-
-async function editarTarefa(id) {
-    
-    const titulo = document.getElementById('tituloTarefaEditada').value
-    const descricao = document.getElementById('descricaoTarefaEditada').value
-    const data = document.querySelector("#dataTarefaEditada").value
-    const inputs = document.querySelectorAll('#categoriaTarefaEditada input[type="radio"]');
-    let categoria = '';
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked) {
-            categoria = inputs[i].value;
-            break; // Interrompe o loop quando encontrar o selecionado
-        }
-    }
-
-    const tarefaAtualizada = {
-        titulo: titulo,
-        descricao: descricao,
-        data: data,
-        categoria: categoria,
-        idUsuario: idPerfil
-    };
-
-    try {
-        await fetch(`http://localhost:5081/tarefas/${id}`, {
-            method: 'PUT', 
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(tarefaAtualizada)
-        });
-        console.log('Tarefa substituída com sucesso!');
-    } catch (error) {
-        console.error('Ocorreu um erro ao substituir a tarefa: ', error);
-    }
-} 
-
-async function deletarTarefa(id) {
-    try {
-        await fetch(`http://localhost:5081/tarefas/${id}`, {
-            method: 'DELETE',
-        });
-        console.log('Tarefa excluída com sucesso!');
-        atualizarPagina()
-    } catch (error) {
-        console.error('Ocorreu um erro ao excluir a tarefa:', error);
-    }
-}
-async function criarTarefas(filtro) {
-    const infoTarefas = await validarTarefas()
-    console.log(infoTarefas)
-    if(filtro>0){
-        for (let cont = 0; cont < infoTarefas.length; cont++) {
-            if(infoTarefas[cont].categoria==filtro){
-                criarTarefa(infoTarefas[cont])
-            }
-        }
-    } else {
-        for (let cont = 0; cont < infoTarefas.length; cont++) {
-            criarTarefa(infoTarefas[cont])
-        }
-    }
-
-}
-botaoLogout.addEventListener('click', logout)
-function logout() {
-    localStorage.removeItem('idusuario')
-    window.location.reload()
-}
-
-closePanelNovaTarefa.addEventListener('click',   fecharPainelNovaTarefa)
-function fecharPainelNovaTarefa() {
-    tarefaPage.style.visibility = "hidden"
-}
-closePanelEditarTarefa.addEventListener('click', fecharPainelEditarTarefa)
-function fecharPainelEditarTarefa() {
-    tarefaEditPage.style.visibility = "hidden"
-}
-
-function callAdicionarTarefaPage() {
-    tarefaPage.style.visibility = "visible"
-}
-
 
 function criarTarefa(infoTarefas) {
    
     const tarefa = document.createElement('div')
     tarefa.classList.add('tarefa')
-    tarefa.classList.add(verificaCategoria(infoTarefas.categoria))
+    tarefa.classList.add(verificarCategoria(infoTarefas.categoria))
 
     const tarefaTop = document.createElement('div')
     tarefaTop.classList.add('tarefaTop')
@@ -257,7 +96,7 @@ function criarTarefa(infoTarefas) {
 
 
     if(infoTarefas.categoria)
-    categoriaIcon.src = "../img/tarefasIcon/" + verificaCategoria(infoTarefas.categoria) + ".png"
+    categoriaIcon.src = "../img/tarefasIcon/" + verificarCategoria(infoTarefas.categoria) + ".png"
 
 
     tarefaCategoria.appendChild(categoriaIcon)
@@ -293,8 +132,7 @@ function criarTarefa(infoTarefas) {
     editIcon.addEventListener('click', () => abrirPainelEdicao(infoTarefas.id));
     trashIcon.addEventListener('click', () => deletarTarefa(infoTarefas.id));
 }
-
-function verificaCategoria(categoria) {
+function verificarCategoria(categoria) {
     if (categoria == 1) {
         return "pessoal"
     }
@@ -312,11 +150,166 @@ function verificarData(dataTarefa) {
     //Verifica se a data já foi ultrapassada
     const DATE = new Date();
     let dia = DATE.getDate().toString();
-    if (dia < 10) { mes = '0' + dia }
     let mes = (DATE.getMonth() + 1).toString();
+    if (dia < 10) { mes = '0' + dia }
     if (mes < 10) { mes = '0' + mes }
     const dataAtual = DATE.getFullYear().toString() + mes + dia;
     if (dataTarefa < dataAtual) {
         return true
     } else return false
 }
+async function criarTarefas(filtro) {
+    const infoTarefas = await validarTarefas()
+    if(filtro>0){
+        for (let cont = 0; cont < infoTarefas.length; cont++) {
+            if(infoTarefas[cont].categoria==filtro){
+                criarTarefa(infoTarefas[cont])
+            }
+        }
+    } else {
+        for (let cont = 0; cont < infoTarefas.length; cont++) {
+            criarTarefa(infoTarefas[cont])
+        }
+    }
+
+}
+
+function excluirListaTarefas(){
+    while (listaTarefas.firstChild) {
+        listaTarefas.removeChild(listaTarefas.firstChild);
+    }
+}
+function atualizarPagina(){
+    excluirListaTarefas()
+    criarTarefas(filtro)
+}
+
+
+
+
+function callAdicionarTarefaPage() {
+    tarefaPage.style.visibility = "visible"
+}
+closePanelNovaTarefa.addEventListener('click', ()=>{
+    tarefaPage.style.visibility = "hidden"
+})
+async function cadastroTarefa() {
+
+    const titulo = document.getElementById('tituloTarefaNova').value
+    const descricao = document.getElementById('descricaoTarefaNova').value
+    const data = document.querySelector("#dataTarefaNova").value
+    const inputs = document.querySelectorAll('#categoriaTarefaNova input[type="radio"]');
+
+    let categoria = '';
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checked) {
+            categoria = inputs[i].value;
+            break; // Interrompe o loop quando encontrar o selecionado
+        }
+    }
+
+    let [ano] = data.split("-");
+
+
+    if (titulo == "" || ano > 9999) {
+        //
+    } else {
+        try {
+            const novaTarefa = {
+                titulo: titulo,
+                descricao: descricao,
+                data: data,
+                categoria: categoria,
+                idUsuario: idPerfil
+            }
+
+
+            await fetch('http://localhost:5081/tarefas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(novaTarefa)
+            })
+            fecharPainel()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+
+async function abrirPainelEdicao(idTarefa){
+    const titulo = document.getElementById('tituloTarefaEditada')
+    const descricao = document.getElementById('descricaoTarefaEditada')
+    const data = document.querySelector("#dataTarefaEditada")
+    const inputs = document.querySelectorAll('#categoriaTarefaEditada input[type="radio"]');
+
+    const tarefas = await validarTarefas()
+    for(let cont = 0;cont<tarefas.length;cont++){
+        if(idTarefa===tarefas[cont].id){
+            titulo.value = tarefas[cont].titulo
+            descricao.value = tarefas[cont].descricao
+            let dataAtual = tarefas[cont].data
+            data.value = dataAtual
+            if(inputs[(tarefas[cont].categoria)-1])
+            inputs[(tarefas[cont].categoria)-1].checked = true
+        }
+    }
+    tarefaEditPage.style.visibility = 'visible'
+
+    const botaoEditar = document.getElementById('finalizarEdicao')
+    botaoEditar.addEventListener('click', () => editarTarefa(idTarefa));
+}
+closePanelEditarTarefa.addEventListener('click', ()=>{
+    tarefaEditPage.style.visibility = "hidden"
+
+})
+async function editarTarefa(id) {
+    
+    const titulo = document.getElementById('tituloTarefaEditada').value
+    const descricao = document.getElementById('descricaoTarefaEditada').value
+    const data = document.querySelector("#dataTarefaEditada").value
+    const inputs = document.querySelectorAll('#categoriaTarefaEditada input[type="radio"]');
+    let categoria = '';
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checked) {
+            categoria = inputs[i].value;
+            break; // Interrompe o loop quando encontrar o selecionado
+        }
+    }
+
+    const tarefaAtualizada = {
+        titulo: titulo,
+        descricao: descricao,
+        data: data,
+        categoria: categoria,
+        idUsuario: idPerfil
+    };
+
+    try {
+        await fetch(`http://localhost:5081/tarefas/${id}`, {
+            method: 'PUT', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tarefaAtualizada)
+        });
+        console.log('Tarefa substituída com sucesso!');
+    } catch (error) {
+        console.error('Ocorreu um erro ao substituir a tarefa: ', error);
+    }
+} 
+async function deletarTarefa(id) {
+    try {
+        await fetch(`http://localhost:5081/tarefas/${id}`, {
+            method: 'DELETE',
+        });
+        console.log('Tarefa excluída com sucesso!');
+        atualizarPagina()
+    } catch (error) {
+        console.error('Ocorreu um erro ao excluir a tarefa:', error);
+    }
+}
+
+
